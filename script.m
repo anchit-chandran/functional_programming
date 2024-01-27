@@ -1,11 +1,11 @@
-sum_n::num->num
-sum_n 1 = 1
-sum_n n = n + sum_n(n-1)
+|| mytake will return the first n items of the list, discarding the rest
+mytake::(num, [*])->[*]
 
-plus::(num,num)->num
-plus (1, y) = 1 + y
-plus (x, 1) = x + 1
-plus (x, y) = 1 + 1 + plus(x-1, y-1)
+mytake(1, item : a_list ) = [item]	 	|| base case -> just take last item, discard rest of list
+mytake(n, item : a_list) = item : mytake(n-1, a_list) 
+
+
+
 
 
 
