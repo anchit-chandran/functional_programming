@@ -3,6 +3,8 @@
 || 2. number of 2s before first 0
 || 3. length of longest sequence of 1s before first 0
 || e.g. count_pre_zero ([1,1,2,2,1,1,1,2,1,0,1,2,0]) = (6, 3, 3)
+|| count_pre_zero ([0]) = (0,0,0)
+|| count_pre_zero ([1,1,1,2,2,2,1,2,2,1,0,1,1,1,1,1,1,1,2]) = (5, 5, 3)
 
 || -------------- ONE PASS O(N) -------------
 count_pre_zero :: [num] -> (num,num,num)
