@@ -75,7 +75,6 @@ deletenum (item) (Tree (ltree, val, rtree)) || Descend
     = Tree (ltree, val, descend rtree), otherwise
         where descend = deletenum (item)
 
-
 || Test case 1 - delete no child
 test_2f_1 = deletenum (Num 2) test_tree = Tree (Tnil,Num 3,Tree (Tree (Tnil,Num 5,Tnil),Num 6,Tree (Tnil,Num 8,Tree (Tnil,Num 9,Tnil))))
 || Test case 2 - delete 1 child
