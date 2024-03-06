@@ -79,6 +79,6 @@ deletenum (item) (Tree (ltree, val, rtree)) || Descend
 test_2f_1 = deletenum (Num 2) test_tree = Tree (Tnil,Num 3,Tree (Tree (Tnil,Num 5,Tnil),Num 6,Tree (Tnil,Num 8,Tree (Tnil,Num 9,Tnil))))
 || Test case 2 - delete 1 child
 test_2f_2 = deletenum (Num 8) test_tree = Tree (Tree (Tnil,Num 2,Tnil),Num 3,Tree (Tree (Tnil,Num 5,Tnil),Num 6,Tree (Tnil,Num 9,Tnil)))
-|| Test case 2 - delete 2 child
+|| Test case 3 - delete 2 child
 delete_test_tree_2_child = list_to_tree (<) [Num 3, Num 2, Num 6,Num 5, Num 4, Num 8, Num 9]
 test_2f_3 = deletenum (Num 6) delete_test_tree_2_child
