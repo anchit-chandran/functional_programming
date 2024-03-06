@@ -1,8 +1,6 @@
-||  applylist [(+ 10),(* 3)] 2 will evaluate to [12,6].
+switch ::= On | Off
 
-applylist :: [* -> **] -> * -> [**]
-
-applylist [] x 
-    = []
-applylist (fn : rest_fns) x 
-    = ((fn x) : (applylist rest_fns x))
+show_message :: switch -> [char]
+show_message On = show "Light is on!"
+show_message Off = show "Light is off."
+    
