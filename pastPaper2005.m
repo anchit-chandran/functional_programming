@@ -55,3 +55,22 @@ test_odd_1_shuffle = shuffle 1 test_deck_2 = result_deck_2
 test_deck_3 = [(1,Hearts), (2,Hearts), (3,Spades), (4,Spades)]
 result_deck_3 = [(4,Spades), (3,Spades), (2,Hearts), (1,Hearts)]
 test_shuffle_2 = shuffle 2 test_deck_3 = result_deck_3
+
+|| Q2c ---
+|| cast a str(int) to int
+char_to_num :: char -> num
+char_to_num c = code c - code '0'
+
+|| take a stringified int e.g. "123" and sum digits resulting in e.g. 1+2+3 = 6
+sum_digits :: [char] -> num
+sum_digits [] = 0
+sum_digits (digit_1 : rest) = char_to_num(digit_1) + sum_digits(rest)
+
+answer :: num -> num -> num
+answer a b
+    = result, if len_digits = 1
+    = sum_digits (show result), otherwise
+        where
+            mult_as_str = show (a*b)
+            result = sum_digits mult_as_str
+            len_digits = #(show result)
