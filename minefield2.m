@@ -132,17 +132,11 @@ all_tests = and [
 
 || Defining these first as planning to use throughout.
 
-|| `idx_to_coord` helper to simplify mixing
-|| 0-indexing an coords starting at 1. Largely try to avoid using indexing.
-idx ::= Idx (num,num)
-idx_to_coords :: idx -> coords 
-idx_to_coords (Idx (row,col)) = (row+1, col+1)
-
 || peek function is a utility getter function to return the value of a given
 || cell coord in a board. 
 || Always assumes coord values NOT idx! As these are the input format for game.
 peek :: coords -> board -> cell
-peek (row,col) a_board = a_board!(row-1)!(col-1)
+peek (row,col) a_board = a_board!(row-1)!(col-1) || idx vs coord!
 
 || usermove uses peek to set whether the requested move has hit a Mine | Visted
 || and the set_visited function to update the given cell as visited. Even
