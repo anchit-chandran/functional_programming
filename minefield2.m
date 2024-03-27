@@ -1,15 +1,22 @@
 || QUERIES
 || Does the cons operator require parentheses if you have multiple expressions? 
-|| e.g. do you need to do 2)?
+|| e.g. do you need to do 2) from following options: 
 ||          1) x : fn_b x y z ----> will this do `(x : fn_b) x y z`
 ||          2) x : (fn_b x y z)
-|| Actual example:
+|| Actual example (line 106):
 ||      ins_mine (m_row, m_col) (board_row : rest_board)
 ||           = board_row : (ins_mine ((m_row-1), m_col) rest_board)
 
 
 || Q1 ========================================================= Q1
-|| The game called “Minefield” presents the user with a 10x10 grid of cells that are initially blank. Five (5) of these cells contain hidden mines. The user is invited to enter (x,y) coordsinates (such that both x and y are between 1 and 10 inclusive) for cells that she wishes to visit. The user is given one point for every cell that is visited that does not contain a mine. As soon as the user visits a cell that contains a mine, or visits a cell that has already been visited, the game is over and the program prints the user’s score to the screen.
+|| The game called “Minefield” presents the user with a 10x10 grid of cells 
+|| that are initially blank. Five (5) of these cells contain hidden mines. The 
+|| user is invited to enter (x,y) coordsinates (such that both x and y are between 
+|| 1 and 10 inclusive) for cells that she wishes to visit. The user is given one 
+|| point for every cell that is visited that does not contain a mine. As soon as 
+|| the user visits a cell that contains a mine, or visits a cell that has already 
+|| been visited, the game is over and the program prints the user’s score to the 
+|| screen.
 
 || You are given the following type synonym definition for the game board:
 
@@ -30,7 +37,11 @@ coords == (num,num)
 cell ::= Safe | Visited | Mine
 
 || Q2 ========================================================= Q2
-|| Give the definition (including its type) of the function init_board which takes as its argument a (possibly infinite) list of (x,y) coordsinates representing the positions of the mines. Your function should generate a value of type board containing 95 empty cells and 5 cells containing mines in the appropriate positions.
+|| Give the definition (including its type) of the function init_board which 
+|| takes as its argument a (possibly infinite) list of (x,y) coordsinates 
+|| representing the positions of the mines. Your function should generate a 
+|| value of type board containing 95 empty cells and 5 cells containing mines 
+|| in the appropriate positions.
 
 || A2 ========================================================= A2
 || init_board first creates a board of 100 Safe cells. It then iterates
@@ -108,3 +119,111 @@ all_tests = and [
                 test_board_dims,
                 test_dummy_board_mine
             ]
+
+|| Q3a ========================================================= Q3a
+|| Give the definitions (including types) of the following two functions:
+
+|| — usermove. This function takes two arguments: the board and a single (x,y) 
+|| coordinate. It returns a two-tuple containing (i) a boolean according to 
+|| whether the user has hit a mine or a previously visited cell, and (ii) a new 
+|| board, suitably updated to indicate which cells have been visited.
+
+|| A3a ========================================================= A3a
+
+|| Defining these first as planning to use throughout.
+
+|| `idx_to_coord` helper to simplify mixing
+|| 0-indexing an coords starting at 1. Largely try to avoid using indexing.
+idx ::= Idx (num,num)
+idx_to_coords :: idx -> coords 
+idx_to_coords (Idx (row,col)) = (row+1, col+1)
+
+|| peek function is a utility getter function to return the value of a given
+|| cell coord in a board. 
+|| Always assumes coord values NOT idx! As these are the input format for game.
+peek :: coords -> board -> cell
+peek (row,col) a_board = a_board!(row-1)!(col-1)
+
+|| usermove uses peek to set whether the requested move has hit a Mine | Visted
+|| and the set_visited function to update the given cell as visited. Even
+|| if that cell is Visited / Mine, it will return a new board simply with the 
+|| current value Visited / Mine.
+usermove :: board -> coords -> (bool, board)
+usermove curr_board (row, col)
+    = (~is_safe, update_board curr_board)
+      where
+      is_safe = (peek (row,col) curr_board) = Safe
+      update_board = set_visited (row,col)
+
+|| set_visited will return a new, updated board with the given player move cell
+|| set to the following value, depending on the current value:
+||      Safe -> Visited
+||      Visited -> Visited
+||      Mine -> Mine
+|| Assume given coord is valid.
+set_visited :: coords -> board -> board
+set_visited (1, p_col) (b_row : rest) || Match, now search inside the row
+    = updated_row : rest
+      where 
+      updated_row 
+        = in_row_visit p_col b_row  || :: num -> [cell] -> [cell]
+      in_row_visit 1 (Safe : rest) || Played safe cell
+        = Visited : rest
+      in_row_visit 1 (not_safe : rest) || Played Visited | Mine cell
+        = not_safe : rest
+      in_row_visit p_col (any_cell : rest)
+        = any_cell : (in_row_visit (p_col-1) rest)
+set_visited (p_row, p_col) (b_row : rest) || Search step
+    = b_row : set_visited ((p_row-1), p_col) rest
+
+|| TESTS ===
+visited_dummy_board = snd (usermove dummy_board (1,3))
+(move_to_safe_flag, safe_move_board) = usermove visited_dummy_board (1,2)
+(move_to_visit_flag, visit_move_board) = usermove visited_dummy_board (1,3)
+(move_to_mine_flag, mine_move_board) = usermove visited_dummy_board (1,1)
+
+test_usermove_flags = [
+                        move_to_safe_flag, 
+                        move_to_mine_flag, 
+                        move_to_visit_flag
+                        ] = [
+                            False, 
+                            True, 
+                            True
+                            ]
+
+
+|| Q3b ========================================================= Q3b
+|| Give the definitions (including types) of the following two functions:
+
+|| — showboard. this function takes a single argument: the board. It 
+|| returns a list of characters with newlines embedded appropriately in order 
+|| to display the board on the screen. Previously-visited cells should be shown 
+|| as the character ’X’ and unvisited cells should be shown as the space 
+|| character. Mines should be shown as spaces (i.e. hidden from the user). 
+
+|| A3b ========================================================= A3b
+
+|| First iterate through each row. Get a prettified, mapped row of cells.
+|| Append '\n'. Then repeat, until finally adding a \n at the very end.
+|| NOTE instead of space char, using '_' as better to visualise.
+showboard :: board -> [char]
+showboard []
+    = "\n"
+showboard (b_row : rest)
+    = prettified_row ++ (showboard rest)
+      where
+      prettified_row = (prettify b_row) ++ "\n"
+
+|| Mapping
+||  Safe | Mine -> '_'
+||  Visited -> 'X'
+prettify :: [cell] -> [char]
+prettify []
+    = []
+prettify (Visited : rest)
+    = 'X' : prettify rest
+prettify (mine_or_safe : rest)
+    = '_' : prettify rest
+
+
